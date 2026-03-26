@@ -5,6 +5,8 @@
 
 using namespace std;
 
+const string DB_FILE = "data.db";
+
 
 /**
  * @brief Insert a record into the database
@@ -41,7 +43,7 @@ void insertRecord() {
  * @param id The id of the record to be deleted.
  */
 void deleteRecord(int id) {
-    ifstream inFile("data.db", ios::binary);
+    ifstream inFile(DB_FILE, ios::binary);
     ofstream tempFile("tempDB.db", ios::binary);
 
 
@@ -85,7 +87,7 @@ void deleteRecord(int id) {
  * If no records are found, it will print a message saying "No Records exist"
  */
 void showAllRecords() {
-    ifstream inFile("data.db", ios::binary);
+    ifstream inFile(DB_FILE, ios::binary);
 
     if(!inFile) {
         cout<<"Unable to open file\n";
@@ -117,7 +119,7 @@ void showAllRecords() {
  * @param id The id of the record to be searched.
  */
 void searchRecordById(int id) {
-    ifstream inFile("data.db", ios::binary);
+    ifstream inFile(DB_FILE, ios::binary);
 
     if(!inFile) {
         cout<<"Unable to open file\n";
