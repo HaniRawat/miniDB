@@ -1,0 +1,20 @@
+# Compiled files
+*.exe
+*.out
+*.o
+
+# Build output
+db
+
+# Database files
+*.db
+
+# Temporary files
+temp*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code (optional)
+.vscode/
