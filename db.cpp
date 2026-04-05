@@ -2,8 +2,10 @@
 #include <iostream>
 #include "db.h"
 #include <cstdio>
+#include <map>
 
 using namespace std;
+map<int, streampos> indexMap;
 
 const string DB_FILE = "data.db";
 
@@ -21,14 +23,31 @@ void insertRecord() {
     Record r;
     cout<<"Enter id: ";
     cin>>r.id;
+
+    if(indexMap.find(r.id) != indexMap.end()) {
+        cout<<"Error: ID already exists\n";
+        return;
+    }
+
     cout<<"Enter name: ";
     cin>>r.name;
     cout<<"Enter age: ";
     cin>>r.age;
 
-    ofstream outFile("data.db", ios::binary | ios::app);
+    ofstream outFile(DB_FILE, ios::binary | ios::app | ios::ate);
+
+    if(!outFile) {
+        cout<<"Unable to open file\n";
+        return;
+    }
+
+    streampos pos = outFile.tellp();
+
+
     outFile.write((char*)&r, sizeof(r));
     outFile.close();
+
+    indexMap[r.id] = pos;
 
     cout<<"Record inserted successfully\n";
 }
@@ -69,6 +88,8 @@ void deleteRecord(int id) {
 
     remove("data.db");
     rename("tempDB.db", "data.db");
+
+    loadIndex();
 
     if(found)
         cout<<"Record deleted successfully\n";
@@ -112,34 +133,56 @@ void showAllRecords() {
  * @brief Search for a record by id in the database
  *
  * This function will search for a record by its id in the database.
- * It will read all the records from the database file and compare the id of each record with the given id.
- * If a record with the given id is found, it will print the record to the console and stop searching.
- * If no record with the given id is found, it will print a message saying "No such record exist".
+ *  It will first check if the id exists in the index map. If it does, it will seek to the position of the record in the database file and read it.
+ * It will then print the record to the console.
  *
  * @param id The id of the record to be searched.
  */
 void searchRecordById(int id) {
+
+    if(indexMap.find(id) == indexMap.end()) {
+        cout<<"No such record exist\n";
+        return;
+    }
     ifstream inFile(DB_FILE, ios::binary);
 
     if(!inFile) {
         cout<<"Unable to open file\n";
         return;
     }
-    bool found = false;
+    streampos pos = indexMap[id];
+    inFile.seekg(pos);
+
     Record r;
 
-    while(inFile.read((char*)&r, sizeof(r))) {
-        if(r.id == id) {
-            found = true;
-            cout<<"Id: "<<r.id<<" | Name: "<<r.name<<" | Age: "<<r.age<<"\n";
-            return;
-        }
+    if(inFile.read((char*)&r, sizeof(r))) {
+        cout<<"Id: "<<r.id<<" | Name: "<<r.name<<" | Age: "<<r.age<<"\n";
+    } else {
+        cout<<"Error reading record\n";
     }
+
     inFile.close();
-    if(!found) {
-        cout<<"No such record exist\n";
-    }
 }
 
+void loadIndex() {
+    indexMap.clear();
+    
+    ifstream inFile(DB_FILE, ios::binary);
+
+    if(!inFile) {
+        cout<<"Unable to open file\n";
+        return;
+    }
+
+    Record r;
+    streampos pos = 0;
+
+    while(inFile.read((char*)&r, sizeof(r))) {
+        indexMap[r.id] = pos;
+        pos += sizeof(r);
+    }
+
+    inFile.close();
+}
 
 

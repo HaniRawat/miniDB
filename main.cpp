@@ -6,6 +6,8 @@ using namespace std;
 
 int main() {
 
+    loadIndex();
+
     int choice;
 
     while(1) {
