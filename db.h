@@ -18,3 +18,4 @@ void deleteRecord(int id);
 void searchRecordById(int id);
 void showAllRecords();
 void loadIndex();
+void updateRecord(int id);

@@ -185,4 +185,34 @@ void loadIndex() {
     inFile.close();
 }
 
+void updateRecord(int id) {
+    if(indexMap.find(id) == indexMap.end()) {
+        cout << "No such record exist\n";
+        return;
+    }
+    
+    fstream file(DB_FILE, ios::binary | ios::in | ios::out);
+
+    if(!file) {
+        cout<<"Error opening file\n";
+        return;
+    }
+
+    streampos pos = indexMap[id];
+    file.seekp(pos);
+
+    Record r;
+    r.id = id;
+
+    cout<<"Enter new name: ";
+    cin >> r.name;
+
+    cout<<"Enter your age: ";
+    cin>>r.age;
+
+    file.write((char*)&r, sizeof(r));
+    file.close();
+
+    cout<<"Record updated successfully";
+}
 

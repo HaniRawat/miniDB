@@ -15,7 +15,8 @@ int main() {
         cout<<"2. Delete Record\n";
         cout<<"3. Search Record\n";
         cout<<"4. Show All Records\n";
-        cout<<"5. Exit\n";
+        cout<<"5. Update a Record\n";
+        cout<<"6. Exit\n";
 
         cout<<"Enter your choice: ";
         cin>>choice;
@@ -39,6 +40,12 @@ int main() {
             showAllRecords();
         }
         else if(choice == 5) {
+            int id;
+            cout<<"Enter id to update: ";
+            cin>>id;
+            updateRecord(id);
+        }
+        else if(choice == 6) {
             exit(0);
         }
         else {
